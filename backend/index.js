@@ -1,24 +1,47 @@
 const express = require('express');
-const { exec } = require('child_process');
 const cors = require('cors');
+const { sql, config } = require('./db');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/reporte', (req, res) => {
-  const { fechaInicio, fechaFin } = req.query;
+// Devuelve los datos guardados en la tabla ReporteTM
+app.get('/api/reporte', async (req, res) => {
+  try {
+    await sql.connect(config);
+    const result = await sql.query('SELECT * FROM ReporteTM');
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error al consultar la BD:', err);
+    res.status(500).json({ error: 'Error al consultar los datos' });
+  } finally {
+    await sql.close();
+  }
+});
+
+// Ejecuta el stored procedure InsertarReporteTM con fechas
+app.post('/api/insertar-reporte', async (req, res) => {
+  const { fechaInicio, fechaFin } = req.body;
+
   if (!fechaInicio || !fechaFin) {
-    return res.status(400).json({ error: 'Faltan parámetros de fecha' });
+    return res.status(400).json({ error: 'Faltan fechas' });
   }
 
-  const comando = `twschema.ReporteTM '${fechaInicio}', '${fechaFin}'`;
-
-  exec(comando, (error, stdout, stderr) => {
-    if (error) return res.status(500).json({ error: error.message });
-    res.json({ salida: stdout });
-  });
+  try {
+    await sql.connect(config);
+    const request = new sql.Request();
+    request.input('FechaInicio', sql.DateTime, fechaInicio);
+    request.input('FechaFin', sql.DateTime, fechaFin);
+    await request.execute('InsertarReporteTM');
+    res.json({ message: 'Datos insertados correctamente' });
+  } catch (err) {
+    console.error('Error al insertar:', err);
+    res.status(500).json({ error: 'Error al insertar datos' });
+  } finally {
+    await sql.close();
+  }
 });
 
 const PORT = process.env.PORT || 3001;
