@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { formatearFecha, formatearTiempo, limpiarValor } from './utils';
-import {encabezados, columnasVisibles} from './columnHeader';
+import { formatDate } from './utils/formatters/formatDate';
+import { formatTime } from './utils/formatters/formatTime';
+import { emptyValue } from './utils/formatters/emptyValue';
+import { encabezados, columnasVisibles } from './utils/config/columnHeader';
 
 function App() {
   const [data, setData] = useState([]);
@@ -11,9 +13,8 @@ function App() {
 
     const procesado = json.map(fila => ({
       ...fila,
-      FechaInicio: formatearFecha(fila.FechaInicio),
-      FechaFin: formatearFecha(fila.FechaFin),
-      Tiempo: formatearTiempo(fila.Tiempo),
+      FechaInicio: formatDate(fila.FechaInicio),
+      Tiempo: formatTime(fila.Tiempo),
     }));
 
     setData(procesado);
@@ -37,7 +38,7 @@ function App() {
             {data.map((fila, idx) => (
               <tr key={idx}>
                 {columnasVisibles.map((col, i) => (
-                  <td key={i}>{limpiarValor(fila[col])}</td>
+                  <td key={i}>{emptyValue(fila[col])}</td>
                 ))}
               </tr>
             ))}
