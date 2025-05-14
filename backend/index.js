@@ -11,7 +11,7 @@ app.use(express.json());
 app.get('/api/reporte', async (req, res) => {
   try {
     await sql.connect(config);
-    const result = await sql.query('SELECT * FROM ReporteTM');
+    const result = await sql.query('SELECT * FROM dbo.vw_ReporteTMExpandido');
     res.json(result.recordset);
   } catch (err) {
     console.error('Error al consultar la BD:', err);

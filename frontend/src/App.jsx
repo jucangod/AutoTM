@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { formatDate } from './utils/formatters/formatDate';
 import { formatTime } from './utils/formatters/formatTime';
 import { emptyValue } from './utils/formatters/emptyValue';
-import { encabezados, columnasVisibles } from './utils/config/columnHeader';
+import { encabezados, columnasVisibles } from './utils/config/columnHeaders';
 
 function App() {
   const [data, setData] = useState([]);
@@ -16,6 +16,8 @@ function App() {
       FechaInicio: formatDate(fila.FechaInicio),
       Tiempo: formatTime(fila.Tiempo),
     }));
+    
+    console.log('Datos recibidos:', json[0]);
 
     setData(procesado);
   };
