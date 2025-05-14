@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { formatearFecha, formatearTiempo, limpiarValor } from './utils';
+import {encabezados, columnasVisibles} from './columnHeader';
 
 function App() {
   const [data, setData] = useState([]);
@@ -27,16 +28,16 @@ function App() {
         <table border="1" cellPadding="5" style={{ marginTop: '20px', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              {Object.keys(data[0]).map((col, idx) => (
-                <th key={idx}>{col}</th>
+              {columnasVisibles.map((col, idx) => (
+                <th key={idx}>{encabezados[col] || col}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {data.map((fila, idx) => (
               <tr key={idx}>
-                {Object.entries(fila).map(([col, valor], i) => (
-                  <td key={i}>{limpiarValor(valor)}</td>
+                {columnasVisibles.map((col, i) => (
+                  <td key={i}>{limpiarValor(fila[col])}</td>
                 ))}
               </tr>
             ))}
