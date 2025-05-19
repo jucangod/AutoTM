@@ -1,23 +1,39 @@
 import { useState } from 'react';
+import { columnasVisibles, encabezados } from './utils/config/columnHeaders';
 import { formatDate } from './utils/formatters/formatDate';
 import { formatTime } from './utils/formatters/formatTime';
 import { emptyValue } from './utils/formatters/emptyValue';
-import { encabezados, columnasVisibles } from './utils/config/columnHeaders';
 
 function App() {
   const [data, setData] = useState([]);
+  const [filtros, setFiltros] = useState({
+    fechaInicio: '',
+    fechaFin: '',
+    linea: '',
+    causa: '',
+    tecnologia: ''
+  });
+
+  const handleChange = (e) => {
+    setFiltros({ ...filtros, [e.target.name]: e.target.value });
+  };
 
   const consultar = async () => {
-    const res = await fetch('http://localhost:3001/api/reporte');
+    const query = new URLSearchParams();
+
+    Object.entries(filtros).forEach(([key, value]) => {
+      if (value) query.append(key, value);
+    });
+
+    const res = await fetch(`http://localhost:3001/api/reporte?${query}`);
     const json = await res.json();
 
     const procesado = json.map(fila => ({
       ...fila,
       FechaInicio: formatDate(fila.FechaInicio),
-      Tiempo: formatTime(fila.Tiempo),
+      FechaFin: formatDate(fila.FechaFin),
+      Tiempo: formatTime(fila.Tiempo)
     }));
-    
-    console.log('Datos recibidos:', json[0]);
 
     setData(procesado);
   };
@@ -25,10 +41,43 @@ function App() {
   return (
     <div style={{ padding: '20px' }}>
       <h1>Reporte de Tiempos Muertos</h1>
-      <button onClick={consultar}>Cargar datos</button>
 
-      {data.length > 0 && (
-        <table border="1" cellPadding="5" style={{ marginTop: '20px', borderCollapse: 'collapse' }}>
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          Fecha Inicio:{' '}
+          <input type="datetime-local" name="fechaInicio" onChange={handleChange} />
+        </label>{' '}
+        <label>
+          Fecha Fin:{' '}
+          <input type="datetime-local" name="fechaFin" onChange={handleChange} />
+        </label>{' '}
+        <label>
+          Línea:{' '}
+          <select name="linea" onChange={handleChange}>
+            <option value="">(todas)</option>
+            <option value="EPP L1">EPP L1</option>
+            <option value="EPP L2">EPP L2</option>
+            <option value="Lata">Lata</option>
+          </select>
+        </label>{' '}
+        <label>
+          Causa:{' '}
+          <input name="causa" type="text" onChange={handleChange} placeholder="Ej: Micro-paro" />
+        </label>{' '}
+        <label>
+          Tecnología:{' '}
+          <select name="tecnologia" onChange={handleChange}>
+            <option value="">(todas)</option>
+            <option value="Pouch">Pouch</option>
+            <option value="Lata">Lata</option>
+            <option value="Formadora">Formadora</option>
+          </select>
+        </label>{' '}
+        <button onClick={consultar}>Consultar</button>
+      </div>
+
+      {data.length > 0 ? (
+        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               {columnasVisibles.map((col, idx) => (
@@ -46,9 +95,9 @@ function App() {
             ))}
           </tbody>
         </table>
+      ) : (
+        <p>No hay datos cargados todavía.</p>
       )}
-
-      {data.length === 0 && <p>No hay datos cargados todavía.</p>}
     </div>
   );
 }
