@@ -7,6 +7,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Conectamos la nueva ruta
+const reporteRoutes = require('./routes/report');
+app.use('/api/report', reporteRoutes);
+
 // Devuelve los datos guardados en la tabla ReporteTM
 app.get('/api/reporte', async (req, res) => {
   try {
