@@ -3,15 +3,15 @@ import { columnasVisibles, encabezados } from './utils/config/columnHeaders';
 import { formatDate } from './utils/formatters/formatDate';
 import { formatTime } from './utils/formatters/formatTime';
 import { emptyValue } from './utils/formatters/emptyValue';
+import { Linea, Periodo, Equipo } from './components/filterOptions';
+import { SelectFilter } from './components/selectFilters';
 
 function App() {
   const [data, setData] = useState([]);
   const [filtros, setFiltros] = useState({
-    fechaInicio: '',
-    fechaFin: '',
     linea: '',
-    causa: '',
-    tecnologia: ''
+    periodo: '',
+    equipo: '',
   });
 
   const handleChange = (e) => {
@@ -19,13 +19,15 @@ function App() {
   };
 
   const consultar = async () => {
+    console.log('Filtros recibidos:', filtros);
+
     const query = new URLSearchParams();
 
     Object.entries(filtros).forEach(([key, value]) => {
       if (value) query.append(key, value);
     });
 
-    const res = await fetch(`http://localhost:3001/api/reporte?${query}`);
+    const res = await fetch(`http://localhost:3001/api/report?${query}`);
     const json = await res.json();
 
     const procesado = json.map(fila => ({
@@ -43,36 +45,27 @@ function App() {
       <h1>Reporte de Tiempos Muertos</h1>
 
       <div style={{ marginBottom: '20px' }}>
-        <label>
-          Fecha Inicio:{' '}
-          <input type="datetime-local" name="fechaInicio" onChange={handleChange} />
-        </label>{' '}
-        <label>
-          Fecha Fin:{' '}
-          <input type="datetime-local" name="fechaFin" onChange={handleChange} />
-        </label>{' '}
-        <label>
-          Línea:{' '}
-          <select name="linea" onChange={handleChange}>
-            <option value="">(todas)</option>
-            <option value="EPP L1">EPP L1</option>
-            <option value="EPP L2">EPP L2</option>
-            <option value="Lata">Lata</option>
-          </select>
-        </label>{' '}
-        <label>
-          Causa:{' '}
-          <input name="causa" type="text" onChange={handleChange} placeholder="Ej: Micro-paro" />
-        </label>{' '}
-        <label>
-          Tecnología:{' '}
-          <select name="tecnologia" onChange={handleChange}>
-            <option value="">(todas)</option>
-            <option value="Pouch">Pouch</option>
-            <option value="Lata">Lata</option>
-            <option value="Formadora">Formadora</option>
-          </select>
-        </label>{' '}
+        <SelectFilter
+          label="Línea"
+          name="linea"
+          value={filtros.linea}
+          onChange={handleChange}
+          opciones={Linea}
+        />
+        <SelectFilter 
+          label="Periodo"
+          name="periodo"
+          value={filtros.periodo}
+          onChange={handleChange}
+          opciones={Periodo}
+        />
+        <SelectFilter 
+          label="Equipo"
+          name="equipo"
+          value={filtros.equipo}
+          onChange={handleChange}
+          opciones={Equipo}
+        />
         <button onClick={consultar}>Consultar</button>
       </div>
 
