@@ -11,7 +11,7 @@ function App() {
   const [filtros, setFiltros] = useState({
     linea: '',
     periodo: '',
-    equipo: '',
+    equipoEspecifico: '',
   });
 
   const handleChange = (e) => {
@@ -61,8 +61,8 @@ function App() {
         />
         <SelectFilter 
           label="Equipo"
-          name="equipo"
-          value={filtros.equipo}
+          name="equipoEspecifico"
+          value={filtros.equipoEspecifico}
           onChange={handleChange}
           opciones={Equipo}
         />
