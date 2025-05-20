@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { columnasVisibles, encabezados } from './utils/config/columnHeaders';
 import { formatDate } from './utils/formatters/formatDate';
 import { formatTime } from './utils/formatters/formatTime';
+import { formatProgram } from './utils/formatters/formatProgram';
 import { emptyValue } from './utils/formatters/emptyValue';
-import { Linea, Periodo, Equipo, Semana } from './components/filterOptions';
+import { Linea, Periodo, Equipo, Semana, Programado } from './components/filterOptions';
 import { SelectFilter } from './components/selectFilters';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
       FechaInicio: formatDate(fila.FechaInicio),
       FechaFin: formatDate(fila.FechaFin),
       Tiempo: formatTime(fila.Tiempo),
+      Programado: formatProgram(fila.Programado)
     }));
 
 
@@ -95,6 +97,13 @@ function App() {
           value={filtros.equipoEspecifico}
           onChange={handleChange}
           opciones={Equipo}
+        />
+        <SelectFilter 
+          label="¿Programado?"
+          name="programado"
+          value={filtros.programado}
+          onChange={handleChange}
+          opciones={Programado}
         />
         <button onClick={() => consultar(true)}>Consultar</button>
       </div>

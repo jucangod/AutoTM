@@ -1,7 +1,7 @@
 const { sql, config } = require('../db');
 
 const obtenerReporteFiltrado = async (req, res) => {
-    const { fechaInicio, linea, periodo, semana, equipoEspecifico } = req.query;
+    const { fechaInicio, linea, periodo, semana, equipoEspecifico, programado } = req.query;
     const { pagina = 1, limite = 100 } = req.query;
     const offset = (pagina - 1) * limite;
 
@@ -29,6 +29,10 @@ const obtenerReporteFiltrado = async (req, res) => {
         conditions.push(`CONVERT(date, FechaInicio) = @FechaInicio`);
     }
 
+    if (programado !== undefined && programado !== null && programado !== '') {
+        conditions.push(`Programado = @Programado`);
+    }
+
     if (conditions.length > 0) {
         query += ' AND ' + conditions.join(' AND ');
     }
@@ -48,6 +52,7 @@ const obtenerReporteFiltrado = async (req, res) => {
         if (semana) request.input('Semana', sql.Int, parseInt(semana));
         if (equipoEspecifico) request.input('EquipoEspecifico', sql.VarChar, equipoEspecifico);
         if (fechaInicio) request.input('FechaInicio', sql.Date, new Date(fechaInicio));
+        if (programado) request.input('Programado', sql.Bit, parseInt(programado));
 
         request.input('offset', sql.Int, offset);
         request.input('limite', sql.Int, parseInt(limite));

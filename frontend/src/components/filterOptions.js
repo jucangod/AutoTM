@@ -26,4 +26,10 @@ const Equipo = [
     'TT9-11'
 ];
 
-export { Linea, Periodo, Equipo, Semana };
+const Programado = [
+    { value: '', label: '' },
+    { value: '1', label: 'Sí' },
+    { value: '0', label: 'No' }
+];
+
+export { Linea, Periodo, Equipo, Semana, Programado };
