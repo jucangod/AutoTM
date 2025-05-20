@@ -7,6 +7,8 @@ import { Linea, Periodo, Equipo, Semana } from './components/filterOptions';
 import { SelectFilter } from './components/selectFilters';
 
 function App() {
+  const [pagina, setPagina] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [data, setData] = useState([]);
   const [filtros, setFiltros] = useState({
     fechaInicio: '',
@@ -20,16 +22,15 @@ function App() {
     setFiltros({ ...filtros, [e.target.name]: e.target.value });
   };
 
-  const consultar = async () => {
-    console.log('Filtros recibidos:', filtros);
-
+  const consultar = async (reset = false) => {
     const query = new URLSearchParams();
 
     Object.entries(filtros).forEach(([key, value]) => {
       if (value) query.append(key, value);
     });
 
-    console.log('🟡 Filtros enviados:', filtros);
+    query.append('pagina', reset ? 1 : pagina);
+    query.append('limite', 20); // puedes ajustar esto
 
     const res = await fetch(`http://localhost:3001/api/report?${query}`);
     const json = await res.json();
@@ -38,10 +39,19 @@ function App() {
       ...fila,
       FechaInicio: formatDate(fila.FechaInicio),
       FechaFin: formatDate(fila.FechaFin),
-      Tiempo: formatTime(fila.Tiempo)
+      Tiempo: formatTime(fila.Tiempo),
     }));
 
+
+  if (reset) {
     setData(procesado);
+    setPagina(2);
+  } else {
+    setData(prev => [...prev, ...procesado]);
+    setPagina(prev => prev + 1);
+  }
+
+    setHasMore(json.length > 0);
   };
 
   return (
@@ -86,7 +96,7 @@ function App() {
           onChange={handleChange}
           opciones={Equipo}
         />
-        <button onClick={consultar}>Consultar</button>
+        <button onClick={() => consultar(true)}>Consultar</button>
       </div>
 
       {data.length > 0 ? (
@@ -110,6 +120,12 @@ function App() {
         </table>
       ) : (
         <p>No hay datos cargados todavía.</p>
+      )}
+      
+      {hasMore && data.length > 0 && (
+        <button onClick={() => consultar(false)} style={{ marginTop: '10px' }}>
+          Cargar más
+        </button>
       )}
     </div>
   );

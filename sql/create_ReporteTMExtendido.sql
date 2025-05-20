@@ -12,7 +12,7 @@ WITH Base AS (
     AreaAfecta,
     Equipo,
     Estacion,
-    Causa AS [Causa Principal],
+    Causa AS CausaPrincipal,
     DetalleCausa,
     Tiempo,
     Usuario,
@@ -22,7 +22,7 @@ WITH Base AS (
     (Tiempo % 3600) / 60 AS Min,
     Tiempo % 60 AS Seg,
 
-    (Tiempo / 3600.0) AS [Tiempo de Paro Total],
+    (Tiempo / 3600.0) AS TiempoParoTotal,
 
     CASE 
       WHEN LOWER(Causa) IN (
@@ -37,72 +37,72 @@ WITH Base AS (
       ELSE 'Pouch'
     END AS Tecnologia,
 
-    CONCAT(Usuario, '- ', Equipo) AS [Equipo Especifico]
+    CONCAT('TT9-', Equipo) AS EquipoEspecifico
   FROM ReporteTM
 ),
 Extendida AS (
   SELECT *,
     CASE
-      WHEN [Equipo Especifico] IN ('TT9- 1','TT9- 2','TT9- 3','TT9- 4','TT9- 11') THEN 'EPP L1'
-      WHEN [Equipo Especifico] IN ('TT9- 5','TT9- 6','TT9- 7','TT9- 8','TT9- 9','TT9- 10') THEN 'EPP L2'
+      WHEN EquipoEspecifico IN ('TT9-1','TT9-2','TT9-3','TT9-4','TT9-11') THEN 'EPP L1'
+      WHEN EquipoEspecifico IN ('TT9-5','TT9-6','TT9-7','TT9-8','TT9-9','TT9-10') THEN 'EPP L2'
       ELSE 'NO'
     END AS Linea
   FROM Base
 )
 SELECT *,
-  CASE WHEN Programado = 1 THEN 0 ELSE [Tiempo de Paro Total] END AS [Tiempo Muerto],
+  CASE WHEN Programado = 1 THEN 0 ELSE TiempoParoTotal END AS TiempoMuerto,
 
   CASE 
-    WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.33 AND Linea = 'EPP L2' THEN ([Tiempo de Paro Total] - 0.33)
-    WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.25 AND Linea = 'EPP L1' THEN ([Tiempo de Paro Total] - 0.25)
-    WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.75 AND Linea = 'Lata' THEN ([Tiempo de Paro Total] - 0.75)
+    WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.33 AND Linea = 'EPP L2' THEN (TiempoParoTotal - 0.33)
+    WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.25 AND Linea = 'EPP L1' THEN (TiempoParoTotal - 0.25)
+    WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.75 AND Linea = 'Lata' THEN (TiempoParoTotal - 0.75)
     ELSE 0
-  END AS [TM Cambio de Producto],
+  END AS TMCambioProducto,
 
   CASE
-    WHEN [Causa Principal] = 'Cambio de Formato' AND [Tiempo de Paro Total] > 0.75 AND Tecnologia = 'Pouch' THEN ([Tiempo de Paro Total] - 0.75)
-    WHEN [Causa Principal] = 'Cambio de Formato' AND [Tiempo de Paro Total] > 2 AND Tecnologia = 'Lata' THEN ([Tiempo de Paro Total] - 2)
+    WHEN CausaPrincipal = 'Cambio de Formato' AND TiempoParoTotal > 0.75 AND Tecnologia = 'Pouch' THEN (TiempoParoTotal - 0.75)
+    WHEN CausaPrincipal = 'Cambio de Formato' AND TiempoParoTotal > 2 AND Tecnologia = 'Lata' THEN (TiempoParoTotal - 2)
     ELSE 0
-  END AS [Cambio de Formato],
+  END AS CambioFormato,
 
   CASE
-    WHEN LOWER([Causa Principal]) = 'limpieza programada' AND [Tiempo de Paro Total] > 0.25 AND Tecnologia = 'Pouch' THEN ([Tiempo de Paro Total] - 0.25)
-    WHEN LOWER([Causa Principal]) = 'limpieza programada' AND [Tiempo de Paro Total] > 0.333 AND Tecnologia = 'Latas' THEN ([Tiempo de Paro Total] - 0.333)
+    WHEN LOWER(CausaPrincipal) = 'limpieza programada' AND TiempoParoTotal > 0.25 AND Tecnologia = 'Pouch' THEN (TiempoParoTotal - 0.25)
+    WHEN LOWER(CausaPrincipal) = 'limpieza programada' AND TiempoParoTotal > 0.333 AND Tecnologia = 'Latas' THEN (TiempoParoTotal - 0.333)
     ELSE 0
-  END AS [Limpieza Programada TM],
+  END AS LimpiezaProgramadaTM,
 
-  (CASE WHEN Programado = 1 THEN 0 ELSE [Tiempo de Paro Total] END) +
+  (CASE WHEN Programado = 1 THEN 0 ELSE TiempoParoTotal END) +
   (CASE 
-    WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.33 AND Linea = 'EPP L2' THEN ([Tiempo de Paro Total] - 0.33)
-    WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.25 AND Linea = 'EPP L1' THEN ([Tiempo de Paro Total] - 0.25)
-    WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.75 AND Linea = 'Lata' THEN ([Tiempo de Paro Total] - 0.75)
+    WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.33 AND Linea = 'EPP L2' THEN (TiempoParoTotal - 0.33)
+    WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.25 AND Linea = 'EPP L1' THEN (TiempoParoTotal - 0.25)
+    WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.75 AND Linea = 'Lata' THEN (TiempoParoTotal - 0.75)
     ELSE 0 END) +
   (CASE
-    WHEN [Causa Principal] = 'Cambio de Formato' AND [Tiempo de Paro Total] > 0.75 AND Tecnologia = 'Pouch' THEN ([Tiempo de Paro Total] - 0.75)
-    WHEN [Causa Principal] = 'Cambio de Formato' AND [Tiempo de Paro Total] > 2 AND Tecnologia = 'Lata' THEN ([Tiempo de Paro Total] - 2)
+    WHEN CausaPrincipal = 'Cambio de Formato' AND TiempoParoTotal > 0.75 AND Tecnologia = 'Pouch' THEN (TiempoParoTotal - 0.75)
+    WHEN CausaPrincipal = 'Cambio de Formato' AND TiempoParoTotal > 2 AND Tecnologia = 'Lata' THEN (TiempoParoTotal - 2)
     ELSE 0 END) +
   (CASE
-    WHEN LOWER([Causa Principal]) = 'limpieza programada' AND [Tiempo de Paro Total] > 0.25 AND Tecnologia = 'Pouch' THEN ([Tiempo de Paro Total] - 0.25)
-    WHEN LOWER([Causa Principal]) = 'limpieza programada' AND [Tiempo de Paro Total] > 0.333 AND Tecnologia = 'Latas' THEN ([Tiempo de Paro Total] - 0.333)
-    ELSE 0 END) AS [Tiempo Muerto Total (HR)],
+    WHEN LOWER(CausaPrincipal) = 'limpieza programada' AND TiempoParoTotal > 0.25 AND Tecnologia = 'Pouch' THEN (TiempoParoTotal - 0.25)
+    WHEN LOWER(CausaPrincipal) = 'limpieza programada' AND TiempoParoTotal > 0.333 AND Tecnologia = 'Latas' THEN (TiempoParoTotal - 0.333)
+    ELSE 0 END) AS TiempoMuertoTotalHR,
 
-  [Tiempo de Paro Total] -
+  TiempoParoTotal -
   (
-    (CASE WHEN Programado = 1 THEN 0 ELSE [Tiempo de Paro Total] END) +
+    (CASE WHEN Programado = 1 THEN 0 ELSE TiempoParoTotal END) +
     (CASE 
-      WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.33 AND Linea = 'EPP L2' THEN ([Tiempo de Paro Total] - 0.33)
-      WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.25 AND Linea = 'EPP L1' THEN ([Tiempo de Paro Total] - 0.25)
-      WHEN [Causa Principal] = 'Cambio de producto' AND [Tiempo de Paro Total] > 0.75 AND Linea = 'Lata' THEN ([Tiempo de Paro Total] - 0.75)
+      WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.33 AND Linea = 'EPP L2' THEN (TiempoParoTotal - 0.33)
+      WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.25 AND Linea = 'EPP L1' THEN (TiempoParoTotal - 0.25)
+      WHEN CausaPrincipal = 'Cambio de producto' AND TiempoParoTotal > 0.75 AND Linea = 'Lata' THEN (TiempoParoTotal - 0.75)
       ELSE 0 END) +
     (CASE
-      WHEN [Causa Principal] = 'Cambio de Formato' AND [Tiempo de Paro Total] > 0.75 AND Tecnologia = 'Pouch' THEN ([Tiempo de Paro Total] - 0.75)
-      WHEN [Causa Principal] = 'Cambio de Formato' AND [Tiempo de Paro Total] > 2 AND Tecnologia = 'Lata' THEN ([Tiempo de Paro Total] - 2)
+      WHEN CausaPrincipal = 'Cambio de Formato' AND TiempoParoTotal > 0.75 AND Tecnologia = 'Pouch' THEN (TiempoParoTotal - 0.75)
+      WHEN CausaPrincipal = 'Cambio de Formato' AND TiempoParoTotal > 2 AND Tecnologia = 'Lata' THEN (TiempoParoTotal - 2)
       ELSE 0 END) +
     (CASE
-      WHEN LOWER([Causa Principal]) = 'limpieza programada' AND [Tiempo de Paro Total] > 0.25 AND Tecnologia = 'Pouch' THEN ([Tiempo de Paro Total] - 0.25)
-      WHEN LOWER([Causa Principal]) = 'limpieza programada' AND [Tiempo de Paro Total] > 0.333 AND Tecnologia = 'Latas' THEN ([Tiempo de Paro Total] - 0.333)
+      WHEN LOWER(CausaPrincipal) = 'limpieza programada' AND TiempoParoTotal > 0.25 AND Tecnologia = 'Pouch' THEN (TiempoParoTotal - 0.25)
+      WHEN LOWER(CausaPrincipal) = 'limpieza programada' AND TiempoParoTotal > 0.333 AND Tecnologia = 'Latas' THEN (TiempoParoTotal - 0.333)
       ELSE 0 END)
-  ) AS [T. Programado],
+  ) AS TProgramado,
 
   DATEPART(DAY, FechaInicio) AS D,
   DATEPART(MONTH, FechaInicio) AS M,
@@ -110,10 +110,10 @@ SELECT *,
   CAST(FechaInicio AS DATE) AS Fecha,
 
   CASE 
-    WHEN [Causa Principal] = 'Falla de equipo' THEN 'Mantenimiento'
-    WHEN [Causa Principal] = 'Falta de Servicios' THEN 'Servicios'
-    WHEN [Causa Principal] = 'Mantenimiento Planeado' THEN 'Mantenimiento'
+    WHEN CausaPrincipal = 'Falla de equipo' THEN 'Mantenimiento'
+    WHEN CausaPrincipal = 'Falta de Servicios' THEN 'Servicios'
+    WHEN CausaPrincipal = 'Mantenimiento Planeado' THEN 'Mantenimiento'
     ELSE 'Operación'
-  END AS [Auxiliar Asignar TM]
+  END AS AuxiliarAsignarTM
 
 FROM Extendida;

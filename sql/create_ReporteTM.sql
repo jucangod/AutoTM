@@ -5,7 +5,7 @@ CREATE TABLE PowerBi.dbo.ReporteTM (
     Periodo          INT,
     Semana           INT,
     Frescura         CHAR(1),
-    CodigoSAP        BIGINT,            -- Numerico largo
+    CodigoSAP        BIGINT,            -- Numérico largo
     Descripcion      NVARCHAR(255),
     AreaReporte      NVARCHAR(100),
     AreaAfecta       NVARCHAR(100),
