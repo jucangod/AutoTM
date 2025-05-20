@@ -3,14 +3,16 @@ import { columnasVisibles, encabezados } from './utils/config/columnHeaders';
 import { formatDate } from './utils/formatters/formatDate';
 import { formatTime } from './utils/formatters/formatTime';
 import { emptyValue } from './utils/formatters/emptyValue';
-import { Linea, Periodo, Equipo } from './components/filterOptions';
+import { Linea, Periodo, Equipo, Semana } from './components/filterOptions';
 import { SelectFilter } from './components/selectFilters';
 
 function App() {
   const [data, setData] = useState([]);
   const [filtros, setFiltros] = useState({
+    fechaInicio: '',
     linea: '',
     periodo: '',
+    semana: '',
     equipoEspecifico: '',
   });
 
@@ -26,6 +28,8 @@ function App() {
     Object.entries(filtros).forEach(([key, value]) => {
       if (value) query.append(key, value);
     });
+
+    console.log('🟡 Filtros enviados:', filtros);
 
     const res = await fetch(`http://localhost:3001/api/report?${query}`);
     const json = await res.json();
@@ -45,6 +49,15 @@ function App() {
       <h1>Reporte de Tiempos Muertos</h1>
 
       <div style={{ marginBottom: '20px' }}>
+        <label>
+          Fecha:{' '}
+          <input
+            type="date"
+            name="fechaInicio"
+            value={filtros.fechaInicio}
+            onChange={handleChange}
+          />
+        </label>
         <SelectFilter
           label="Línea"
           name="linea"
@@ -58,6 +71,13 @@ function App() {
           value={filtros.periodo}
           onChange={handleChange}
           opciones={Periodo}
+        />
+        <SelectFilter 
+          label="Semana"
+          name="semana"
+          value={filtros.semana}
+          onChange={handleChange}
+          opciones={Semana}
         />
         <SelectFilter 
           label="Equipo"

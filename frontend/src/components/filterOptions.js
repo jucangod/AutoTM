@@ -8,6 +8,10 @@ const Periodo = [
     '7', '8', '9', '10', '11', '12', '13'
 ];
 
+const Semana = [
+    '1', '2', '3', '4'
+];
+
 const Equipo = [
     'TT9-1',
     'TT9-2',
@@ -22,4 +26,4 @@ const Equipo = [
     'TT9-11'
 ];
 
-export { Linea, Periodo, Equipo };
+export { Linea, Periodo, Equipo, Semana };
