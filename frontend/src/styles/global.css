@@ -109,9 +109,10 @@ tbody tr:nth-child(even) {
 /* Paginador */
 .paginador {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
 }
 
@@ -122,6 +123,7 @@ tbody tr:nth-child(even) {
   background-color: #ffffff;
   color: #002c4d;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .paginador button.active,
@@ -139,4 +141,47 @@ body,
 html,
 #root {
   background-color: #ffffff !important;
+}
+
+.paginador button.active {
+  background-color: #002c4d;
+  color: white;
+}
+
+.paginador .puntos {
+  padding: 0 4px;
+  color: #002c4d;
+  font-weight: bold;
+}
+
+.ir-a-pagina-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ir-a-label {
+  font-size: 14px;
+  color: #002c4d;
+}
+
+.ir-a-input {
+  width: 60px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #002c4d;
+  text-align: center;
+}
+
+.ir-a-boton {
+  background-color: #044371;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background-color: #e6f0fa;
 }

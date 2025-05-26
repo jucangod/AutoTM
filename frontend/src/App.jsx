@@ -137,50 +137,43 @@ function App() {
       )}
       
       {totalPaginas > 1 && (
-      <div className="paginador">
-        <button onClick={() => consultar(pagina - 1)} disabled={pagina === 1}>
-          ⟨
-        </button>
+        <div className="paginador">
+          <button onClick={() => consultar(pagina - 1)} disabled={pagina === 1}>
+            ⟨
+          </button>
 
-        {pagina > 3 && (
-          <>
-            <button onClick={() => consultar(1)} className={pagina === 1 ? 'active' : ''}>
-              1
-            </button>
-            <span>...</span>
-          </>
-        )}
+          {pagina > 2 && <button onClick={() => consultar(1)}>1</button>}
+          {pagina > 3 && <span className="puntos">...</span>}
+          {pagina > 1 && <button onClick={() => consultar(pagina - 1)}>{pagina - 1}</button>}
 
-        {Array.from({ length: totalPaginas }, (_, i) => i + 1)
-          .filter(p => p === pagina || p === pagina - 1 || p === pagina + 1)
-          .map(p => (
-            <button
-              key={p}
-              onClick={() => consultar(p)}
-              className={p === pagina ? 'active' : ''}
-            >
-              {p}
-            </button>
-          ))}
+          <button className="active">{pagina}</button>
 
-        {pagina < totalPaginas - 2 && (
-          <>
-            <span>...</span>
-            <button
-              onClick={() => consultar(totalPaginas)}
-              className={pagina === totalPaginas ? 'active' : ''}
-            >
-              {totalPaginas}
-            </button>
-          </>
-        )}
+          {pagina < totalPaginas && <button onClick={() => consultar(pagina + 1)}>{pagina + 1}</button>}
+          {pagina < totalPaginas - 2 && <span className="puntos">...</span>}
+          {pagina < totalPaginas - 1 && (
+            <button onClick={() => consultar(totalPaginas)}>{totalPaginas}</button>
+          )}
 
-        <button onClick={() => consultar(pagina + 1)} disabled={pagina === totalPaginas}>
-          ⟩
-        </button>
-      </div>
-    )}
-
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const paginaDestino = parseInt(e.target.elements.paginaDestino.value);
+            if (paginaDestino >= 1 && paginaDestino <= totalPaginas) {
+              consultar(paginaDestino);
+            }
+          }} className="ir-a-pagina-form">
+            <label htmlFor="paginaDestino" className="ir-a-label">Ir a:</label>
+            <input
+              type="number"
+              name="paginaDestino"
+              min="1"
+              max={totalPaginas}
+              defaultValue={pagina}
+              className="ir-a-input"
+            />
+            <button type="submit" className="ir-a-boton">Ir</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
