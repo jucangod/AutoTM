@@ -9,10 +9,12 @@ import { SelectFilter } from './components/selectFilters';
 
 function App() {
   const [pagina, setPagina] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [data, setData] = useState([]);
   const [filtros, setFiltros] = useState({
     fechaInicio: '',
+    fechaFin: '',
     linea: '',
     periodo: '',
     semana: '',
@@ -23,37 +25,29 @@ function App() {
     setFiltros({ ...filtros, [e.target.name]: e.target.value });
   };
 
-  const consultar = async (reset = false) => {
+  const consultar = async (nuevaPagina = 1) => {
     const query = new URLSearchParams();
 
     Object.entries(filtros).forEach(([key, value]) => {
       if (value) query.append(key, value);
     });
 
-    query.append('pagina', reset ? 1 : pagina);
-    query.append('limite', 20); // puedes ajustar esto
+    query.append('pagina', nuevaPagina);
+    query.append('limite', 20); // o el valor que prefieras
 
     const res = await fetch(`http://localhost:3001/api/report?${query}`);
     const json = await res.json();
 
-    const procesado = json.map(fila => ({
+    const procesado = json.data.map(fila => ({
       ...fila,
       FechaInicio: formatDate(fila.FechaInicio),
       FechaFin: formatDate(fila.FechaFin),
       Tiempo: formatTime(fila.Tiempo),
-      Programado: formatProgram(fila.Programado)
     }));
 
-
-  if (reset) {
     setData(procesado);
-    setPagina(2);
-  } else {
-    setData(prev => [...prev, ...procesado]);
-    setPagina(prev => prev + 1);
-  }
-
-    setHasMore(json.length > 0);
+    setPagina(json.pagina);
+    setTotalPaginas(json.totalPaginas);
   };
 
   return (
@@ -67,6 +61,15 @@ function App() {
             type="date"
             name="fechaInicio"
             value={filtros.fechaInicio}
+            onChange={handleChange}
+          />
+        </label>
+        <label style={{ marginLeft: '15px' }}>
+          Fecha fin:{' '}
+          <input
+            type="date"
+            name="fechaFin"
+            value={filtros.fechaFin}
             onChange={handleChange}
           />
         </label>
@@ -105,7 +108,7 @@ function App() {
           onChange={handleChange}
           opciones={Programado}
         />
-        <button onClick={() => consultar(true)}>Consultar</button>
+        <button onClick={() => consultar(1)}>Consultar</button>
       </div>
 
       {data.length > 0 ? (
@@ -131,12 +134,37 @@ function App() {
         <p>No hay datos cargados todavía.</p>
       )}
       
-      {hasMore && data.length > 0 && (
-        <button onClick={() => consultar(false)} style={{ marginTop: '10px' }}>
-          Cargar más
+      {totalPaginas > 1 && (
+      <div style={{ marginTop: '15px' }}>
+        <button
+          onClick={() => consultar(pagina - 1)}
+          disabled={pagina === 1}
+        >
+          ⟨ Anterior
         </button>
-      )}
-    </div>
+
+        {[...Array(totalPaginas)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => consultar(i + 1)}
+            style={{
+              fontWeight: i + 1 === pagina ? 'bold' : 'normal',
+              margin: '0 5px'
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button
+          onClick={() => consultar(pagina + 1)}
+          disabled={pagina === totalPaginas}
+        >
+          Siguiente ⟩
+        </button>
+      </div>
+    )}
+        </div>
   );
 }
 
