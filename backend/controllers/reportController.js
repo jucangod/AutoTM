@@ -106,9 +106,8 @@ const obtenerReporteFiltrado = async (req, res) => {
 
         res.json({
             data: dataResult.recordset,
-            total,
-            totalPaginas,
-            pagina: parseInt(pagina),
+            pagina: Number(pagina),
+            totalPaginas
         });
         } catch (err) {
         console.error('Error al consultar la BD:', err);

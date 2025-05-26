@@ -1,0 +1,142 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilo general del contenedor */
+body {
+  background-color: #ffffff;
+  color: #002c4d;
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Título principal */
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #002c4d;
+  border-bottom: 2px solid #e1e1e1;
+  padding-bottom: 10px;
+}
+
+/* Filtros */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  font-size: 14px;
+  color: #002c4d;
+}
+
+.filtros input,
+.filtros select {
+  padding: 6px 10px;
+  border: 1px solid #044371;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 4px;
+  background-color: #ffffff;
+  color: #002c4d;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+}
+
+.filtros input:focus,
+.filtros select:focus {
+  border-color: #0a5088;
+  box-shadow: 0 0 3px rgba(10, 80, 136, 0.5);
+}
+
+/* Botón consultar */
+.filtros button {
+  align-self: end;
+  background-color: #0a5088;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: auto;
+  transition: background-color 0.3s ease;
+}
+
+.filtros button:hover {
+  background-color: #044371;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+thead {
+  background-color: #002c4d;
+  color: white;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Paginador */
+.paginador {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.paginador button {
+  padding: 6px 10px;
+  border: 1px solid #044371;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #002c4d;
+  cursor: pointer;
+}
+
+.paginador button.active,
+.paginador button:hover {
+  background-color: #044371;
+  color: #ffffff;
+}
+
+table td {
+  background-color: #ffffff;
+  color: #002c4d;
+}
+
+body,
+html,
+#root {
+  background-color: #ffffff !important;
+}

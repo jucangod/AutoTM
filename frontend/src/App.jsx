@@ -6,6 +6,7 @@ import { formatProgram } from './utils/formatters/formatProgram';
 import { emptyValue } from './utils/formatters/emptyValue';
 import { Linea, Periodo, Equipo, Semana, Programado } from './components/filterOptions';
 import { SelectFilter } from './components/selectFilters';
+import './styles/global.css';
 
 function App() {
   const [pagina, setPagina] = useState(1);
@@ -43,6 +44,7 @@ function App() {
       FechaInicio: formatDate(fila.FechaInicio),
       FechaFin: formatDate(fila.FechaFin),
       Tiempo: formatTime(fila.Tiempo),
+      Programado: formatProgram(fila.Programado)
     }));
 
     setData(procesado);
@@ -51,12 +53,12 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className='container'>
       <h1>Reporte de Tiempos Muertos</h1>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div className='filtros'>
         <label>
-          Fecha:{' '}
+          Inicio:{' '}
           <input
             type="date"
             name="fechaInicio"
@@ -64,8 +66,8 @@ function App() {
             onChange={handleChange}
           />
         </label>
-        <label style={{ marginLeft: '15px' }}>
-          Fecha fin:{' '}
+        <label>
+          Fin:{' '}
           <input
             type="date"
             name="fechaFin"
@@ -112,7 +114,7 @@ function App() {
       </div>
 
       {data.length > 0 ? (
-        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
+        <table border="1" cellPadding="5">
           <thead>
             <tr>
               {columnasVisibles.map((col, idx) => (
@@ -135,36 +137,51 @@ function App() {
       )}
       
       {totalPaginas > 1 && (
-      <div style={{ marginTop: '15px' }}>
-        <button
-          onClick={() => consultar(pagina - 1)}
-          disabled={pagina === 1}
-        >
-          ⟨ Anterior
+      <div className="paginador">
+        <button onClick={() => consultar(pagina - 1)} disabled={pagina === 1}>
+          ⟨
         </button>
 
-        {[...Array(totalPaginas)].map((_, i) => (
-          <button
-            key={i}
-            onClick={() => consultar(i + 1)}
-            style={{
-              fontWeight: i + 1 === pagina ? 'bold' : 'normal',
-              margin: '0 5px'
-            }}
-          >
-            {i + 1}
-          </button>
-        ))}
+        {pagina > 3 && (
+          <>
+            <button onClick={() => consultar(1)} className={pagina === 1 ? 'active' : ''}>
+              1
+            </button>
+            <span>...</span>
+          </>
+        )}
 
-        <button
-          onClick={() => consultar(pagina + 1)}
-          disabled={pagina === totalPaginas}
-        >
-          Siguiente ⟩
+        {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+          .filter(p => p === pagina || p === pagina - 1 || p === pagina + 1)
+          .map(p => (
+            <button
+              key={p}
+              onClick={() => consultar(p)}
+              className={p === pagina ? 'active' : ''}
+            >
+              {p}
+            </button>
+          ))}
+
+        {pagina < totalPaginas - 2 && (
+          <>
+            <span>...</span>
+            <button
+              onClick={() => consultar(totalPaginas)}
+              className={pagina === totalPaginas ? 'active' : ''}
+            >
+              {totalPaginas}
+            </button>
+          </>
+        )}
+
+        <button onClick={() => consultar(pagina + 1)} disabled={pagina === totalPaginas}>
+          ⟩
         </button>
       </div>
     )}
-        </div>
+
+    </div>
   );
 }
 
