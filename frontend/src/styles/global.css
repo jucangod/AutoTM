@@ -112,24 +112,75 @@ tbody tr:nth-child(even) {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 6px;
+  margin-top: 20px;
 }
 
 .paginador button {
-  padding: 6px 10px;
+  padding: 6px 12px;
   border: 1px solid #044371;
-  border-radius: 4px;
-  background-color: #ffffff;
+  border-radius: 6px;
+  background-color: #fff;
   color: #002c4d;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.paginador button.active,
-.paginador button:hover {
+.paginador button:hover:not(.active) {
   background-color: #044371;
+  color: #fff;
+}
+
+.paginador button.active {
+  background-color: #002c4d;
   color: #ffffff;
+  border: 1px solid #002c4d;
+}
+
+.paginador .puntos {
+  font-weight: bold;
+  padding: 0 5px;
+  color: #002c4d;
+}
+
+/* Campo "Ir a página" */
+.ir-a-pagina-form {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+
+.ir-a-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #002c4d;
+}
+
+.ir-a-input {
+  width: 60px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #044371;
+  background-color: #fff;
+  color: #002c4d;
+  text-align: center;
+  font-weight: bold;
+}
+
+.ir-a-boton {
+  padding: 5px 8px;
+  border-radius: 4px;
+  background-color: #044371;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.ir-a-boton:hover {
+  background-color: #0a5088;
 }
 
 table td {
@@ -137,51 +188,36 @@ table td {
   color: #002c4d;
 }
 
+.input-con-lupa {
+  display: flex;
+  align-items: center;
+  border: 1px solid #044371;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.input-con-lupa input {
+  width: 60px;
+  border: none;
+  padding: 6px;
+  text-align: center;
+  color: #002c4d;
+  background-color: white;
+}
+
+.lupa-btn {
+  background-color: #044371;
+  color: white;
+  border: none;
+  outline: none;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 0;
+}
+
 body,
 html,
 #root {
   background-color: #ffffff !important;
-}
-
-.paginador button.active {
-  background-color: #002c4d;
-  color: white;
-}
-
-.paginador .puntos {
-  padding: 0 4px;
-  color: #002c4d;
-  font-weight: bold;
-}
-
-.ir-a-pagina-form {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ir-a-label {
-  font-size: 14px;
-  color: #002c4d;
-}
-
-.ir-a-input {
-  width: 60px;
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid #002c4d;
-  text-align: center;
-}
-
-.ir-a-boton {
-  background-color: #044371;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-tbody tr:hover {
-  background-color: #e6f0fa;
 }

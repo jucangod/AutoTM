@@ -1,0 +1,14 @@
+{
+  "name": "controlador-general",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "iniciar": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run abrir-navegador\"",
+    "backend": "cd backend && nodemon index.js",
+    "frontend": "cd frontend && npm run dev",
+    "abrir-navegador": "start http://localhost:5173"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
