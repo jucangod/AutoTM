@@ -6,44 +6,60 @@ BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
-        DECLARE @fechaInicioStr VARCHAR(25) = CONVERT(VARCHAR, @FechaInicio, 120);
-        DECLARE @fechaFinStr VARCHAR(25) = CONVERT(VARCHAR, @FechaFin, 120);
-        DECLARE @sql NVARCHAR(MAX);
+        CREATE TABLE #DatosRemotos (
+            FechaInicio DATETIME,
+            FechaFin DATETIME,
+            Grupo INT,
+            Periodo INT,
+            Semana INT,
+            Frescura CHAR(1),
+            CodigoSAP BIGINT,
+            Descripcion NVARCHAR(255),
+            AreaReporte NVARCHAR(100),
+            AreaAfecta NVARCHAR(100),
+            Equipo INT,
+            Estacion NVARCHAR(100),
+            Causa NVARCHAR(100),
+            DetalleCausa NVARCHAR(255),
+            Tiempo INT,
+            Usuario NVARCHAR(100),
+            Comentario NVARCHAR(MAX)
+        );
 
-        SET @sql = N'
-        WITH DatosRemotos AS (
-            SELECT *
-            FROM OPENQUERY(thingworx,
-                ''EXEC twschema.ReporteTM ''''' + @fechaInicioStr + ''''', ''''' + @fechaFinStr + ''''' '')
-        )
+        INSERT INTO #DatosRemotos
+        EXEC thingworx.twschema.ReporteTM @FechaInicio, @FechaFin;
+
         INSERT INTO PowerBi.dbo.ReporteTM (
             FechaInicio, FechaFin, Grupo, Periodo, Semana, Frescura,
             CodigoSAP, Descripcion, AreaReporte, AreaAfecta,
             Equipo, Estacion, Causa, DetalleCausa, Tiempo,
             Usuario, Comentario
         )
-        SELECT dr.FechaInicio, dr.FechaFin, dr.Grupo, dr.Periodo, dr.Semana, dr.Frescura,
-               dr.CodigoSAP, dr.Descripcion, dr.AreaReporte, dr.AreaAfecta,
-               dr.Equipo, dr.Estacion, dr.Causa, dr.DetalleCausa, dr.Tiempo,
-               dr.Usuario, dr.Comentario
-        FROM DatosRemotos dr
+        SELECT
+            dr.FechaInicio, dr.FechaFin, dr.Grupo, dr.Periodo, dr.Semana, dr.Frescura,
+            dr.CodigoSAP, dr.Descripcion, dr.AreaReporte, dr.AreaAfecta,
+            dr.Equipo, dr.Estacion, dr.Causa, dr.DetalleCausa, dr.Tiempo,
+            dr.Usuario, dr.Comentario
+        FROM #DatosRemotos dr
         WHERE NOT EXISTS (
             SELECT 1
             FROM PowerBi.dbo.ReporteTM l
-            WHERE 
-                l.FechaInicio = dr.FechaInicio AND
-                l.FechaFin = dr.FechaFin AND
-                l.Equipo = dr.Equipo AND
-                l.Causa = dr.Causa AND
-                l.DetalleCausa = dr.DetalleCausa AND
-                l.Tiempo = dr.Tiempo
+            WHERE
+                (l.FechaInicio    = dr.FechaInicio    OR (l.FechaInicio IS NULL AND dr.FechaInicio IS NULL)) AND
+                (l.FechaFin      = dr.FechaFin      OR (l.FechaFin IS NULL AND dr.FechaFin IS NULL)) AND
+                (l.Equipo        = dr.Equipo        OR (l.Equipo IS NULL AND dr.Equipo IS NULL)) AND
+                (l.Causa         = dr.Causa         OR (l.Causa IS NULL AND dr.Causa IS NULL)) AND
+                (l.DetalleCausa  = dr.DetalleCausa  OR (l.DetalleCausa IS NULL AND dr.DetalleCausa IS NULL)) AND
+                (l.Tiempo        = dr.Tiempo        OR (l.Tiempo IS NULL AND dr.Tiempo IS NULL))
         );
-        ';
 
-        EXEC sp_executesql @sql;
+        DROP TABLE #DatosRemotos;
+
+        PRINT '¡Inserción finalizada!';
 
     END TRY
     BEGIN CATCH
         PRINT 'Error al insertar datos: ' + ERROR_MESSAGE();
+        THROW;
     END CATCH
-END;
+END
