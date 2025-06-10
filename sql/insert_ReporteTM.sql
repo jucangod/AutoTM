@@ -29,6 +29,21 @@ BEGIN
         INSERT INTO #DatosRemotos
         EXEC thingworx.twschema.ReporteTM @FechaInicio, @FechaFin;
 
+        -- Normaliza valores vacíos a NULL
+        UPDATE #DatosRemotos
+        SET
+            Causa = NULLIF(LTRIM(RTRIM(Causa)), ''),
+            DetalleCausa = NULLIF(LTRIM(RTRIM(DetalleCausa)), '');
+
+        -- Elimina duplicados internos
+        ;WITH Dups AS (
+          SELECT *,
+                 ROW_NUMBER() OVER (PARTITION BY FechaInicio, FechaFin, Equipo, Causa, DetalleCausa, Tiempo
+                                    ORDER BY (SELECT NULL)) AS rn
+          FROM #DatosRemotos
+        )
+        DELETE FROM Dups WHERE rn > 1;
+
         INSERT INTO PowerBi.dbo.ReporteTM (
             FechaInicio, FechaFin, Grupo, Periodo, Semana, Frescura,
             CodigoSAP, Descripcion, AreaReporte, AreaAfecta,
